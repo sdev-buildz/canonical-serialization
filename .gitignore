@@ -1,0 +1,12 @@
+
+# Playwright
+**/node_modules  
+**/dist
+
+**/*.env*
+!.env.example
+
+**/generated*
+
+# Vitest
+**/coverage

@@ -1,0 +1,95 @@
+{
+  "name": "canonical-serialization",
+  "version": "0.0.0",
+  "description": "Serializes objects into unique, deterministic and deserializable strings, even with circular references.",
+  "keywords": [
+    "serializer",
+    "canonical",
+    "circular",
+    "object-comparison",
+    "structural-equality"
+  ],
+  "license": "ISC",
+  "author": {
+    "name": "sdev-buildz",
+    "email": "stevexdev@zohomail.in",
+    "url": "https://github.com/sdev-buildz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sdev-buildz/canonical-serialization.git"
+  },
+  "type": "module",
+  "files": [
+    "./dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "check": "pnpm run build && pnpm run prettier:check && npm run lint && pnpm run type-check && npm run coverage -- run && pnpm run knip",
+    "clean": "pnx  rimraf -g **/dist *.tsbuildinfo **/*.tsbuildinfo  **/generated generated coverage docs",
+    "clean:all": "pnpm run clean && pnx rimraf -g **/node_modules node_modules",
+    "release": "pnpm run build && pnpm publish",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier --write .",
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "coverage": "vitest --coverage",
+    "knip": "knip",
+    "docs:all": "pnpm run docs:user && pnpm run docs:dev",
+    "docs:dev": "typedoc --options typedoc.dev.js",
+    "docs:user": "typedoc --options typedoc.config.js"
+  },
+  "dependencies": {
+    "serialize-javascript": "^7.0.7"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "onFail": "warn",
+      "version": ">=24"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.0.0",
+      "onFail": "warn"
+    }
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.31.1",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.1.2",
+    "@types/serialize-javascript": "^5.0.4",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "@vitest/coverage-v8": "^4.1.10",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^63.3.2",
+    "eslint-plugin-tsdoc": "^0.5.2",
+    "globals": "^17.8.0",
+    "jiti": "^2.7.0",
+    "knip": "^6.29.0",
+    "prettier": "3.9.6",
+    "tsdown": "^0.22.14",
+    "tsx": "^4.23.1",
+    "typedoc": "^0.28.20",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "typescript-eslint": "^8.65.0",
+    "vitest": "^4.1.10"
+  },
+  "funding": {
+    "type": "buymeacoffee",
+    "url": "https://buymeacoffee.com/stevenx.dev"
+  }
+}

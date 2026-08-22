@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-and-build:
+    strategy:
+      matrix:
+        node: [22, 24, 26]
+        serialize-javascript: [6, 7]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@${{ matrix.node }}
+          version: 11
+
+      - run: pnpm ci
+      - run: pnpm add serialize-javascript@${{ matrix.serialize-javascript }}
+      - run: pnpm exec prettier --write ./pnpm-lock.yaml
+
+      - run: pnpm run check
+
+      - name: Upload to pkgprnew
+        if: matrix.node == 24 && matrix.serialize-javascript == 7
+        run: pnpm dlx pkg-pr-new publish

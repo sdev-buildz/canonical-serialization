@@ -1,0 +1,33 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "extends": ["./tsconfig.base.json"],
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@features/*": ["./src/features/*"],
+      "@root/*": ["./*"]
+    }
+  },
+  "references": [
+    {
+      "path": "./packages/graphql-shared-ws-link"
+    },
+    {
+      "path": "./packages/logger"
+    },
+    {
+      "path": "./packages/migration"
+    },
+    {
+      "path": "./packages/common-utils"
+    },
+    {
+      "path": "./e2e/web-app"
+    },
+    {
+      "path": "./tsconfig.test.json"
+    }
+  ],
+  "include": ["./**/*.ts"]
+}

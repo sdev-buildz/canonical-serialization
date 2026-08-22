@@ -1,0 +1,43 @@
+name: Publish to npm
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+      repository-projects: write
+      deployments: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@24
+          version: 11
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm ci
+
+      - name: Create PR or Publish release
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          commit: 'chore: update versions'
+          title: 'chore: update versions'
+          publish: pnpm run release
+          createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

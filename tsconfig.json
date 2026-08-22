@@ -1,0 +1,38 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    "lib": ["ES2025"],
+    "types": ["node"],
+
+    "module": "preserve",
+    "target": "ES2025",
+    "esModuleInterop": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
+
+    "noUnusedLocals": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    "noEmit": true,
+    "sourceMap": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "noImplicitOverride": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@root/*": ["./*"],
+      "@src/*": ["./src/*"],
+      "@canonical-serialization": ["./src"]
+    }
+  },
+  "exclude": ["**/dist"],
+  "include": ["./**/*.ts", "./**/*.tsx"]
+}
