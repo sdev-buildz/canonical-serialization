@@ -17,7 +17,7 @@ export const deserialize = (input: string): unknown => {
 
   while (dfsQueue.length) {
     const curr = dfsQueue.shift()
-    if (!curr) throw new Error('Unexpected Error')
+    if (!curr) throw new Error('Unexpected Error: Invalid DFS pointer state.')
 
     for (const [key, child] of Object.entries(curr)) {
       //  Returning from leaf nodes

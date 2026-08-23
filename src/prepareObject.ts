@@ -1,6 +1,6 @@
 import type { canonicalSerialization } from './canonicalSerialization'
 import type { deserialize } from './deserialize'
-import type { DeepReadonly, NodeIdType, NodeWithId, RefNode } from './types'
+import type { DeepReadonly, NodeWithId, RefNode } from './types'
 
 /**
  * Modifies objects for {@link canonicalSerialization}.
@@ -55,7 +55,12 @@ export function prepareObject<T = unknown>(
     keepNonCircularReferences?: boolean
   }>
 ) {
-  nextNodeId = 0
+  const getNewNodeId = (() => {
+    let id = 0
+    return () => {
+      return id++
+    }
+  })()
   const configOptions = { ...options }
   if (!('keepCircularReferences' in configOptions))
     configOptions.keepCircularReferences = true
@@ -70,7 +75,7 @@ export function prepareObject<T = unknown>(
     configOptions?.throwOnCircularReference ||
     !configOptions?.keepCircularReferences
 
-  /** Sorts the root keys of the object. Doesn't sort keys of nested objects. */
+  /** Sorts the root keys of the input object. Doesn't sort keys of nested objects. */
   const sortByRootKeys = <T>(input: T): T => {
     if (!input || typeof input !== 'object') return input
     if (Array.isArray(input)) return [...input] as T
@@ -104,13 +109,13 @@ export function prepareObject<T = unknown>(
   /** DFS stack. */
   const dfsStack: Array<{
     /** The index of the child currently being iterated. */
-    chPtrIdx: number
+    childIndex: number
     /** The transformed node to be stored in the output object. */
-    inOutput: NodeWithId
+    currentNode: NodeWithId
   }> = [
     {
-      chPtrIdx: -1,
-      inOutput: orderedRef.ordered,
+      childIndex: -1,
+      currentNode: orderedRef.ordered,
     },
   ]
 
@@ -126,20 +131,20 @@ export function prepareObject<T = unknown>(
   while (dfsStack.length) {
     /** The currently iterated element in {@link dfsStack} */
     const curr = dfsStack.at(-1)
-    if (!curr) throw new Error('Unexpected Error. Invalid pointer.')
+    if (!curr) throw new Error('Unexpected Error: Invalid DFS pointer state.')
 
     //  Update the children iteration index to next child. (will be used in the next iteration).
-    curr.chPtrIdx += 1
+    curr.childIndex += 1
 
     /** The value pointed to by the current node. */
-    const currValue = curr.inOutput.value
+    const currValue = curr.currentNode.value
 
     /** The number of children in the current node */
     const childCount: number = Array.isArray(currValue)
       ? currValue.length
       : Object.keys(currValue).length
 
-    if (curr.chPtrIdx >= childCount) {
+    if (curr.childIndex >= childCount) {
       //  Pop the current node from dfs stack, if the node has no child left to iterate.
       dfsStack.pop()
       continue
@@ -147,9 +152,9 @@ export function prepareObject<T = unknown>(
 
     /** The next child to iter. */
     const nextChild = Array.isArray(currValue)
-      ? currValue[curr.chPtrIdx]
+      ? currValue[curr.childIndex]
       : currValue[
-          Object.keys(currValue)[curr.chPtrIdx] as keyof typeof currValue
+          Object.keys(currValue)[curr.childIndex] as keyof typeof currValue
         ]
 
     if (isLeafNode(nextChild)) {
@@ -172,7 +177,9 @@ export function prepareObject<T = unknown>(
         let referenceType: 'circular' | 'sibling' = 'sibling'
 
         for (let i = 0; i < dfsStack.length; i += 1) {
-          if (dfsStack[i]!.inOutput.__csNodeId__ === visitedNode.__csNodeId__) {
+          if (
+            dfsStack[i]!.currentNode.__csNodeId__ === visitedNode.__csNodeId__
+          ) {
             //  it is a circular reference
             referenceType = 'circular'
             break
@@ -186,10 +193,10 @@ export function prepareObject<T = unknown>(
             throw new Error('Circular Reference')
           //  Replacing circular reference with undefined
           else if (!configOptions?.keepCircularReferences) {
-            assignToIndex(currValue, curr.chPtrIdx, undefined)
+            assignToIndex(currValue, curr.childIndex, undefined)
           } else handled = false
         } else {
-          assignToIndex(currValue, curr.chPtrIdx, visitedNode.value)
+          assignToIndex(currValue, curr.childIndex, visitedNode.value)
         }
         if (handled) continue
       }
@@ -198,7 +205,7 @@ export function prepareObject<T = unknown>(
       const nextNode: RefNode = {
         __csNodeRef__: visitedNode.__csNodeId__,
       }
-      assignToIndex(currValue, curr.chPtrIdx, nextNode)
+      assignToIndex(currValue, curr.childIndex, nextNode)
       continue
     }
 
@@ -214,14 +221,14 @@ export function prepareObject<T = unknown>(
     // Assign the next node to the output
     assignToIndex(
       currValue,
-      curr.chPtrIdx,
+      curr.childIndex,
       removeCircularReferences ? nextNode.value : nextNode
     )
 
     //  Push the next node to the dfsStack
     dfsStack.push({
-      chPtrIdx: -1,
-      inOutput: nextNode,
+      childIndex: -1,
+      currentNode: nextNode,
     })
     visited.set(nextChild, nextNode)
   }
@@ -241,11 +248,6 @@ export const assignToIndex = (
 ) => {
   if (Array.isArray(parent)) parent[Number(idx)] = value
   else parent[Object.keys(parent)[Number(idx)] as keyof typeof parent] = value
-}
-
-let nextNodeId: NodeIdType = 0
-const getNewNodeId = () => {
-  return nextNodeId++
 }
 
 type LeafNode =
