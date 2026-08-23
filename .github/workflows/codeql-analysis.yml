@@ -3,6 +3,7 @@ name: CodeQL Analysis
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch: # Enables manual execution
 
 jobs:
   analyze:
