@@ -15,25 +15,19 @@ jobs:
       deployments: write
       packages: write
     steps:
-      - uses: actions/checkout@v7
+      # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - uses: pnpm/setup@v2
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2
         with:
           runtime: node@24
           version: 11
-
-      - name: Use Node.js 24
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm ci
 
       - name: Create PR or Publish release
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1
         with:
           commit: 'chore: update versions'
           title: 'chore: update versions'
