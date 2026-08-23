@@ -176,10 +176,8 @@ export function prepareObject<T = unknown>(
       ) {
         let referenceType: 'circular' | 'sibling' = 'sibling'
 
-        for (let i = 0; i < dfsStack.length; i += 1) {
-          if (
-            dfsStack[i]!.currentNode.__csNodeId__ === visitedNode.__csNodeId__
-          ) {
+        for (const curr of dfsStack) {
+          if (curr!.currentNode.__csNodeId__ === visitedNode.__csNodeId__) {
             //  it is a circular reference
             referenceType = 'circular'
             break
@@ -193,7 +191,7 @@ export function prepareObject<T = unknown>(
             throw new Error('Circular Reference')
           //  Replacing circular reference with undefined
           else if (!configOptions?.keepCircularReferences) {
-            assignToIndex(currValue, curr.childIndex, undefined)
+            assignToIndex(currValue, curr.childIndex)
           } else handled = false
         } else {
           assignToIndex(currValue, curr.childIndex, visitedNode.value)
@@ -244,7 +242,7 @@ export function prepareObject<T = unknown>(
 export const assignToIndex = (
   parent: Record<string, unknown> | unknown[],
   idx: string | number,
-  value: unknown
+  value?: unknown
 ) => {
   if (Array.isArray(parent)) parent[Number(idx)] = value
   else parent[Object.keys(parent)[Number(idx)] as keyof typeof parent] = value
