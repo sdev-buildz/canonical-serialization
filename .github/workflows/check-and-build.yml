@@ -22,6 +22,7 @@ jobs:
           version: 11
 
       - run: pnpm ci
+
       - run: pnpm add serialize-javascript@${{ matrix.serialize-javascript }}
       - run: pnpm exec prettier --write ./pnpm-lock.yaml
 
@@ -40,6 +41,16 @@ jobs:
     needs: check-and-test-publish
     steps:
       - run: 'echo ${{ needs.check-and-test-publish.outputs.urls }}'
+
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@${{ matrix.node }}
+          version: 11
+
+      - run: pnpm install --frozen-lockfile --dev
+
       - name: Install published package for testing
         run: pnpm add canonical-serialization-published@${{ needs.check-and-test-publish.outputs.urls }}
 
