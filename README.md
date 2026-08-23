@@ -52,7 +52,7 @@ console.log(
 // keys are sorted recursively. Dates are also serialized.
 ```
 
-### 🔄 Serializes shared references (circular or non-circular references) by default. <a id="circular-references"></a>
+### 🔄 Serializes shared references (both circular and non-circular) by default. <a id="circular-references"></a>
 
 ```ts
 const obj1 = { a: { c: {} as Record<string, unknown>, b: 2 } }
@@ -108,12 +108,12 @@ try {
 }
 
 // Outputs: true
-console.log(areStructurallyEqual(obj1,obj2))
+console.log(areStructurallyEqual(obj1, obj2))
 ```
 
 ### ↩ Deserialization
 
-Use `deserialize` to deserialize.
+Use `deserialize` function to deserialize.
 
 ```ts
 import { deserialize } from 'canonical-serialization'
@@ -122,12 +122,12 @@ const deserializedObject = deserialize(serializedString)
 ```
 
 If [shared references](#circular-references) were not serialized,
-[eval](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval) also can deserialize.
+[eval](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval) also can be used.
 
 ## 👥 Community & Support
 
-- 💬 _**Have an idea?**_ Suggest new features in [GitHub Discussions](https://github.com/ken-devz/canonical-serialization/discussions).
+- 💬 _**Have an idea?**_ Suggest new features in [GitHub Discussions](../..//discussions).
 
 - 🚀 _**Support me or my projects**_ through [donations](https://buymeacoffee.com/stevenx.dev).
 
-- 💼 _**Need custom work or consultation?**_ I am available for hire! Reach out via [email](<(mailto:stevexdev+234@zohomail.in)>).
+- 💼 _**Need custom work or consultation?**_ I am available for hire! Reach out via [email](mailto:stevexdev@zohomail.in).

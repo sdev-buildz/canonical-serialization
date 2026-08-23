@@ -5,7 +5,8 @@
   "keywords": [
     "serializer",
     "canonical",
-    "circular",
+    "circular references",
+    "shared references",
     "object-comparison",
     "structural-equality"
   ],
@@ -25,9 +26,14 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.mjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "engines": {
@@ -36,7 +42,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "check": "pnpm run build && pnpm run prettier:check && npm run lint && pnpm run type-check && npm run coverage -- run && pnpm run knip",
+    "check": "pnpm run prettier:check && npm run lint && pnpm run type-check && npm run coverage -- run && pnpm run knip && pnpm run build",
     "clean": "pnx  rimraf -g **/dist *.tsbuildinfo **/*.tsbuildinfo  **/generated generated coverage docs",
     "clean:all": "pnpm run clean && pnx rimraf -g **/node_modules node_modules",
     "release": "pnpm run build && pnpm publish",
