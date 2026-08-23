@@ -126,7 +126,7 @@ If [shared references](#circular-references) were not serialized,
 
 ## 👥 Community & Support
 
-- 💬 _**Have an idea?**_ Suggest new features in [GitHub Discussions](https://github.com/ken-devz/canonical-serialization/discussions).
+- 💬 _**Have an idea?**_ Suggest new features in [GitHub Discussions](../..//discussions).
 
 - 🚀 _**Support me or my projects**_ through [donations](https://buymeacoffee.com/stevenx.dev).
 

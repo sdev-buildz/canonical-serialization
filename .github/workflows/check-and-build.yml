@@ -24,6 +24,15 @@ jobs:
 
       - run: pnpm run check
 
-      - name: Upload to pkgprnew
+      - name: Upload to pkgprnew. To test published package.
+        id: pkgprnew
         if: matrix.node == 24 && matrix.serialize-javascript == 7
         run: pnpm dlx pkg-pr-new publish
+
+      - name: Install published package for testing
+        run: pnpm add canonical-serialization-published@{{ steps.pkgprnew.outputs.urls }}
+
+      - name: Run tests against published package
+        run: npx vitest run
+        env:
+          TEST_PUBLISHED_PKG: 'true'
