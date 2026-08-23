@@ -5,14 +5,17 @@ on:
     branches: [main]
 
 jobs:
-  check-and-build:
+  check-and-test-publish:
     strategy:
       matrix:
         node: [22, 24, 26]
         serialize-javascript: [6, 7]
     runs-on: ubuntu-latest
+    outputs:
+      urls: ${{ steps.pkgprnew.outputs.urls }}
     steps:
       - uses: actions/checkout@v7
+
       - uses: pnpm/setup@v2
         with:
           runtime: node@${{ matrix.node }}
@@ -22,17 +25,25 @@ jobs:
       - run: pnpm add serialize-javascript@${{ matrix.serialize-javascript }}
       - run: pnpm exec prettier --write ./pnpm-lock.yaml
 
+      # Run checks and builds.
       - run: pnpm run check
 
+      # Publish to pkgprnew to test publishing before actual publish.
       - name: Upload to pkgprnew. To test published package.
         id: pkgprnew
         if: matrix.node == 24 && matrix.serialize-javascript == 7
         run: pnpm dlx pkg-pr-new publish
 
+  # Run tests against published package.
+  test-publish:
+    runs-on: ubuntu-latest
+    needs: check-and-test-publish
+    steps:
+      - run: 'echo ${{ needs.check-and-test-publish.outputs.urls }}'
       - name: Install published package for testing
-        run: pnpm add canonical-serialization-published@{{ steps.pkgprnew.outputs.urls }}
+        run: pnpm add canonical-serialization-published@${{ needs.check-and-test-publish.outputs.urls }}
 
       - name: Run tests against published package
-        run: npx vitest run
+        run: npm run test
         env:
           TEST_PUBLISHED_PKG: 'true'
