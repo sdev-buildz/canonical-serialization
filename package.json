@@ -42,7 +42,8 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "check": "pnpm run prettier:check && npm run lint && pnpm run type-check && npm run coverage -- run && pnpm run knip && pnpm run build",
+    "check": "turbo prettier:check lint type-check coverage knip build",
+    "check1": "pnpm run prettier:check && npm run lint && pnpm run type-check && npm run coverage -- run && pnpm run knip && pnpm run build",
     "clean": "pnx  rimraf -g **/dist *.tsbuildinfo **/*.tsbuildinfo  **/generated generated coverage docs",
     "clean:all": "pnpm run clean && pnx rimraf -g **/node_modules node_modules",
     "release": "pnpm run build && pnpm publish",
@@ -89,6 +90,7 @@
     "prettier": "3.9.6",
     "tsdown": "^0.22.14",
     "tsx": "^4.23.1",
+    "turbo": "^2.10.11",
     "typedoc": "^0.28.20",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.65.0",
