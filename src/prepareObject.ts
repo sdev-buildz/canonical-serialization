@@ -177,7 +177,7 @@ export function prepareObject<T = unknown>(
         let referenceType: 'circular' | 'sibling' = 'sibling'
 
         for (const curr of dfsStack) {
-          if (curr!.currentNode.__csNodeId__ === visitedNode.__csNodeId__) {
+          if (curr.currentNode.__csNodeId__ === visitedNode.__csNodeId__) {
             //  it is a circular reference
             referenceType = 'circular'
             break
