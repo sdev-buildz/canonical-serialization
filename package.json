@@ -45,7 +45,7 @@
     "dev": "tsdown --watch",
     "clean": "pnx  rimraf -g **/dist *.tsbuildinfo **/*.tsbuildinfo  **/generated generated coverage docs",
     "clean:all": "pnpm run clean && pnx rimraf -g **/node_modules node_modules",
-    "release": "pnpm run build && pnpm publish",
+    "release": "turbo build && pnpm publish",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
     "lint": "eslint",

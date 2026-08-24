@@ -31,6 +31,10 @@ jobs:
       - run: pnpm add serialize-javascript@${{ matrix.serialize-javascript }}
       - run: pnpm exec prettier --write ./pnpm-lock.yaml
 
+      - name: Remote Cache for Turbo - Github Artifacts
+        # v2.3.12
+        uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7
+
       # Run checks and builds.
       - run: pnpm run check
 
@@ -60,6 +64,10 @@ jobs:
 
       - name: Install the published package for testing
         run: pnpm add canonical-serialization-published@${{ needs.check-and-test-publish.outputs.urls }}
+
+      - name: TurboRepo Remote Cache - Github Artifacts
+        # v2.3.12
+        uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7
 
       - name: Run tests against the published package
         run: pnpm exec turbo coverage
