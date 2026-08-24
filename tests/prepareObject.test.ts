@@ -57,7 +57,6 @@ it('can remove sibling references while serializing circular references.', async
   const result = prepareObject(testObj, {
     keepNonCircularReferences: false,
   })
-  console.dir(result, { depth: 10 })
   expect(result).toStrictEqual({
     __csNodeId__: 0,
     value: {

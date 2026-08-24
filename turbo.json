@@ -5,7 +5,8 @@
     "lint": {},
     "type-check": {},
     "coverage": {
-      "outputs": ["./coverage"]
+      "outputs": ["./coverage"],
+      "env": ["TEST_PUBLISHED_PKG"]
     },
     "knip": {},
     "build": {

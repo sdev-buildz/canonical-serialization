@@ -40,10 +40,9 @@
     "node": ">=22.0.0"
   },
   "scripts": {
+    "check": "turbo prettier:check lint type-check coverage:ci knip build",
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "check": "turbo prettier:check lint type-check coverage knip build",
-    "check1": "pnpm run prettier:check && npm run lint && pnpm run type-check && npm run coverage -- run && pnpm run knip && pnpm run build",
     "clean": "pnx  rimraf -g **/dist *.tsbuildinfo **/*.tsbuildinfo  **/generated generated coverage docs",
     "clean:all": "pnpm run clean && pnx rimraf -g **/node_modules node_modules",
     "release": "pnpm run build && pnpm publish",
@@ -53,6 +52,7 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "coverage": "vitest --coverage",
+    "coverage:ci": "vitest --coverage --ui=false",
     "knip": "knip",
     "docs:all": "pnpm run docs:user && pnpm run docs:dev",
     "docs:dev": "typedoc --options typedoc.dev.js",
@@ -80,6 +80,7 @@
     "@types/serialize-javascript": "^5.0.4",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/ui": "^4.1.11",
     "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsdoc": "^63.3.2",

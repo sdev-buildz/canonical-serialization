@@ -5,7 +5,7 @@ import { isNodeWithId, isRefNode, type NodeIdType } from './types'
  * Deserializes the strings produced by {@link canonicalSerialization}.
  */
 export const deserialize = (input: string): unknown => {
-  const obj = eval(input)
+  const obj = (0, eval)(input)
   if (!isNodeWithId(obj)) return obj
 
   /** Maps {@link NodeIdType} to the value pointed to by the corresponding nodes. */

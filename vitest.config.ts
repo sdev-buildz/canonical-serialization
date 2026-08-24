@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
+    ui: process.env.CI === 'true' ? false : true,
     coverage: {
       thresholds: {
         lines: 80,

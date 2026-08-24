@@ -55,12 +55,13 @@ jobs:
           runtime: node@24
           version: 11
 
+      # Install only dev dependencies. Because the published package itself will have direct dependencies attached with it.
       - run: pnpm install --frozen-lockfile --dev
 
-      - name: Install published package for testing
+      - name: Install the published package for testing
         run: pnpm add canonical-serialization-published@${{ needs.check-and-test-publish.outputs.urls }}
 
-      - name: Run tests against published package
-        run: npm run test
+      - name: Run tests against the published package
+        run: pnpm exec turbo coverage
         env:
           TEST_PUBLISHED_PKG: 'true'
