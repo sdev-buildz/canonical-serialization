@@ -35,7 +35,7 @@ export const isNodeWithId = (node: unknown): node is NodeWithId => {
 }
 
 /**
- * Recusrively adds readonly modifer to the keys of the object.
+ * Recursively adds readonly modifer to the keys of the object.
  */
 export type DeepReadonly<T> = {
   readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K]

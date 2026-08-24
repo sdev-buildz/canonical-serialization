@@ -1,6 +1,43 @@
 import type { canonicalSerialization } from './canonicalSerialization'
 import type { deserialize } from './deserialize'
-import type { DeepReadonly, NodeIdType, NodeWithId, RefNode } from './types'
+import type { DeepReadonly, NodeWithId, RefNode } from './types'
+
+/**
+ * Assigns the value to the index of the array or the key of the object.
+ */
+export const assignToIndex = (
+  parent: Record<string, unknown> | unknown[],
+  idx: string | number,
+  value?: unknown
+) => {
+  if (Array.isArray(parent)) parent[Number(idx)] = value
+  else parent[Object.keys(parent)[Number(idx)] as keyof typeof parent] = value
+}
+
+type LeafNode =
+  | undefined
+  | null
+  | number
+  | string
+  | boolean
+  | Date
+  | RegExp
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  | Function
+  | typeof Map
+  | typeof Set
+  | URL
+
+const isLeafNode = (node: unknown): node is LeafNode => {
+  if (!node || typeof node !== 'object') return true
+  return (
+    node instanceof RegExp ||
+    node instanceof Date ||
+    node instanceof Map ||
+    node instanceof Set ||
+    node instanceof URL
+  )
+}
 
 /**
  * Modifies objects for {@link canonicalSerialization}.
@@ -9,9 +46,6 @@ import type { DeepReadonly, NodeIdType, NodeWithId, RefNode } from './types'
  * Order of elements of arrays are preserved.
  *
  * Replaces circular references with serializable references in order to restore them during deserialization.
- * @param compareFn - Function used to determine the order of the elements.
- *    It is expected to return a negative value if the first argument is less than the second argument, zero if they're equal, and a positive value otherwise.
- *    If omitted, the elements are sorted in ascending, UTF-16 code unit order.
  * @example
  * ```ts
  * const obj1 = {
@@ -39,6 +73,11 @@ import type { DeepReadonly, NodeIdType, NodeWithId, RefNode } from './types'
 export function prepareObject<T = unknown>(
   unordered: T,
   options?: DeepReadonly<{
+    /**
+     * Function used to determine the order of the elements.
+     *  It is expected to return a negative value if the first argument is less than the second argument,
+     *  zero if they're equal, and a positive value otherwise.
+     */
     compareFn?: Parameters<Array<string>['sort']>[0]
     /** If true, throws when it detects any circular reference */
     throwOnCircularReference?: boolean
@@ -48,14 +87,19 @@ export function prepareObject<T = unknown>(
      */
     keepCircularReferences?: boolean
     /**
-     * If true, sibling references are restored.
+     * If true, non-circular shared references are serialized.
      * Defaults to false. But if keepCircularReferences is true, this also defaults to true.
      * If false, sibling references are resolved and replaced with a deep copy of the referenced object.
      */
     keepNonCircularReferences?: boolean
   }>
 ) {
-  nextNodeId = 0
+  const getNewNodeId = (() => {
+    let id = 0
+    return () => {
+      return id++
+    }
+  })()
   const configOptions = { ...options }
   if (!('keepCircularReferences' in configOptions))
     configOptions.keepCircularReferences = true
@@ -70,7 +114,7 @@ export function prepareObject<T = unknown>(
     configOptions?.throwOnCircularReference ||
     !configOptions?.keepCircularReferences
 
-  /** Sorts the root keys of the object. Doesn't sort keys of nested objects. */
+  /** Sorts the root keys of the input object. Doesn't sort keys of nested objects. */
   const sortByRootKeys = <T>(input: T): T => {
     if (!input || typeof input !== 'object') return input
     if (Array.isArray(input)) return [...input] as T
@@ -104,13 +148,13 @@ export function prepareObject<T = unknown>(
   /** DFS stack. */
   const dfsStack: Array<{
     /** The index of the child currently being iterated. */
-    chPtrIdx: number
+    childIndex: number
     /** The transformed node to be stored in the output object. */
-    inOutput: NodeWithId
+    currentNode: NodeWithId
   }> = [
     {
-      chPtrIdx: -1,
-      inOutput: orderedRef.ordered,
+      childIndex: -1,
+      currentNode: orderedRef.ordered,
     },
   ]
 
@@ -126,20 +170,20 @@ export function prepareObject<T = unknown>(
   while (dfsStack.length) {
     /** The currently iterated element in {@link dfsStack} */
     const curr = dfsStack.at(-1)
-    if (!curr) throw new Error('Unexpected Error. Invalid pointer.')
+    if (!curr) throw new Error('Unexpected Error: Invalid DFS pointer state.')
 
     //  Update the children iteration index to next child. (will be used in the next iteration).
-    curr.chPtrIdx += 1
+    curr.childIndex += 1
 
     /** The value pointed to by the current node. */
-    const currValue = curr.inOutput.value
+    const currValue = curr.currentNode.value
 
     /** The number of children in the current node */
     const childCount: number = Array.isArray(currValue)
       ? currValue.length
       : Object.keys(currValue).length
 
-    if (curr.chPtrIdx >= childCount) {
+    if (curr.childIndex >= childCount) {
       //  Pop the current node from dfs stack, if the node has no child left to iterate.
       dfsStack.pop()
       continue
@@ -147,9 +191,9 @@ export function prepareObject<T = unknown>(
 
     /** The next child to iter. */
     const nextChild = Array.isArray(currValue)
-      ? currValue[curr.chPtrIdx]
+      ? currValue[curr.childIndex]
       : currValue[
-          Object.keys(currValue)[curr.chPtrIdx] as keyof typeof currValue
+          Object.keys(currValue)[curr.childIndex] as keyof typeof currValue
         ]
 
     if (isLeafNode(nextChild)) {
@@ -171,8 +215,8 @@ export function prepareObject<T = unknown>(
       ) {
         let referenceType: 'circular' | 'sibling' = 'sibling'
 
-        for (let i = 0; i < dfsStack.length; i += 1) {
-          if (dfsStack[i]!.inOutput.__csNodeId__ === visitedNode.__csNodeId__) {
+        for (const curr of dfsStack) {
+          if (curr.currentNode.__csNodeId__ === visitedNode.__csNodeId__) {
             //  it is a circular reference
             referenceType = 'circular'
             break
@@ -186,10 +230,10 @@ export function prepareObject<T = unknown>(
             throw new Error('Circular Reference')
           //  Replacing circular reference with undefined
           else if (!configOptions?.keepCircularReferences) {
-            assignToIndex(currValue, curr.chPtrIdx, undefined)
+            assignToIndex(currValue, curr.childIndex)
           } else handled = false
         } else {
-          assignToIndex(currValue, curr.chPtrIdx, visitedNode.value)
+          assignToIndex(currValue, curr.childIndex, visitedNode.value)
         }
         if (handled) continue
       }
@@ -198,7 +242,7 @@ export function prepareObject<T = unknown>(
       const nextNode: RefNode = {
         __csNodeRef__: visitedNode.__csNodeId__,
       }
-      assignToIndex(currValue, curr.chPtrIdx, nextNode)
+      assignToIndex(currValue, curr.childIndex, nextNode)
       continue
     }
 
@@ -214,14 +258,14 @@ export function prepareObject<T = unknown>(
     // Assign the next node to the output
     assignToIndex(
       currValue,
-      curr.chPtrIdx,
+      curr.childIndex,
       removeCircularReferences ? nextNode.value : nextNode
     )
 
     //  Push the next node to the dfsStack
     dfsStack.push({
-      chPtrIdx: -1,
-      inOutput: nextNode,
+      childIndex: -1,
+      currentNode: nextNode,
     })
     visited.set(nextChild, nextNode)
   }
@@ -229,46 +273,4 @@ export function prepareObject<T = unknown>(
   return removeCircularReferences
     ? orderedRef.ordered.value
     : orderedRef.ordered
-}
-
-/**
- * Assigns the value to the index of the array or the key of the object.
- */
-export const assignToIndex = (
-  parent: Record<string, unknown> | unknown[],
-  idx: string | number,
-  value: unknown
-) => {
-  if (Array.isArray(parent)) parent[Number(idx)] = value
-  else parent[Object.keys(parent)[Number(idx)] as keyof typeof parent] = value
-}
-
-let nextNodeId: NodeIdType = 0
-const getNewNodeId = () => {
-  return nextNodeId++
-}
-
-type LeafNode =
-  | undefined
-  | null
-  | number
-  | string
-  | boolean
-  | Date
-  | RegExp
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  | Function
-  | typeof Map
-  | typeof Set
-  | URL
-
-const isLeafNode = (node: unknown): node is LeafNode => {
-  if (!node || typeof node !== 'object') return true
-  return (
-    node instanceof RegExp ||
-    node instanceof Date ||
-    node instanceof Map ||
-    node instanceof Set ||
-    node instanceof URL
-  )
 }
