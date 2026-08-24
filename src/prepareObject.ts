@@ -46,9 +46,6 @@ const isLeafNode = (node: unknown): node is LeafNode => {
  * Order of elements of arrays are preserved.
  *
  * Replaces circular references with serializable references in order to restore them during deserialization.
- * @param compareFn - Function used to determine the order of the elements.
- *    It is expected to return a negative value if the first argument is less than the second argument, zero if they're equal, and a positive value otherwise.
- *    If omitted, the elements are sorted in ascending, UTF-16 code unit order.
  * @example
  * ```ts
  * const obj1 = {
@@ -76,6 +73,11 @@ const isLeafNode = (node: unknown): node is LeafNode => {
 export function prepareObject<T = unknown>(
   unordered: T,
   options?: DeepReadonly<{
+    /**
+     * Function used to determine the order of the elements.
+     *  It is expected to return a negative value if the first argument is less than the second argument,
+     *  zero if they're equal, and a positive value otherwise.
+     */
     compareFn?: Parameters<Array<string>['sort']>[0]
     /** If true, throws when it detects any circular reference */
     throwOnCircularReference?: boolean
@@ -85,7 +87,7 @@ export function prepareObject<T = unknown>(
      */
     keepCircularReferences?: boolean
     /**
-     * If true, sibling references are restored.
+     * If true, non-circular shared references are serialized.
      * Defaults to false. But if keepCircularReferences is true, this also defaults to true.
      * If false, sibling references are resolved and replaced with a deep copy of the referenced object.
      */

@@ -124,6 +124,45 @@ const deserializedObject = deserialize(serializedString)
 If [shared references](#circular-references) were not serialized,
 [eval](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval) also can be used.
 
+## ⚙️ canonicalSerialization - Function signature
+
+```ts
+canonicalSerialization(
+  obj: unknown // THe object to be serialized.
+
+  options?: {
+    /**
+     * Function used to determine the order of the elements.
+     *  It is expected to return a negative value if the first argument is less than the second argument,
+     *  zero if they're equal, and a positive value otherwise.
+     */
+    compareFn?: Parameters<Array<string>['sort']>[0]
+    /** If true, throws when it detects any circular reference */
+    throwOnCircularReference?: boolean
+    /**
+     * If true, circular references are serialized. They can be restored by `deserialize`.
+     * Defaults to true, if this field is not set.
+     */
+    keepCircularReferences?: boolean
+    /**
+     * If true, non-circular shareds references are restored.
+     * Defaults to false. But if keepCircularReferences is true, this also defaults to true.
+     * If false, sibling references are resolved and replaced with a deep copy of the referenced object.
+     */
+    keepNonCircularReferences?: boolean
+  },
+
+  //  options forwarded to serializeJavascript.
+  serializeJsOptions?: Readonly<Parameters<typeof serializeJavascript>[1]
+): GraphQLSharedWsLink
+```
+
+For more information on serializeJsOptions, refer the [official serializeJavascript documentation](<https://www.npmjs.com/package/serialize-javascript#:~:text=for%20straight%20serialization.-,Options,-The%20serialize()>).
+
+## 🔌 API Reference
+
+`createSharedClient` has the exact same API as graphql-ws, except for the `webSocketImpl` field. For complete usage guides, configuration options, and type definitions, please refer to the [official graphql-ws documentation](https://the-guild.dev/graphql/ws). If you are using a custom WebSocket implementation, see the [graphql-shared-ws custom WebSocket guide](CUSTOM_WEB_SOCKET.md).
+
 ## 👥 Community & Support
 
 - 💬 _**Have an idea?**_ Suggest new features in [GitHub Discussions](../..//discussions).
