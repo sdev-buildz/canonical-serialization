@@ -3,6 +3,43 @@ import type { deserialize } from './deserialize'
 import type { DeepReadonly, NodeWithId, RefNode } from './types'
 
 /**
+ * Assigns the value to the index of the array or the key of the object.
+ */
+export const assignToIndex = (
+  parent: Record<string, unknown> | unknown[],
+  idx: string | number,
+  value?: unknown
+) => {
+  if (Array.isArray(parent)) parent[Number(idx)] = value
+  else parent[Object.keys(parent)[Number(idx)] as keyof typeof parent] = value
+}
+
+type LeafNode =
+  | undefined
+  | null
+  | number
+  | string
+  | boolean
+  | Date
+  | RegExp
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  | Function
+  | typeof Map
+  | typeof Set
+  | URL
+
+const isLeafNode = (node: unknown): node is LeafNode => {
+  if (!node || typeof node !== 'object') return true
+  return (
+    node instanceof RegExp ||
+    node instanceof Date ||
+    node instanceof Map ||
+    node instanceof Set ||
+    node instanceof URL
+  )
+}
+
+/**
  * Modifies objects for {@link canonicalSerialization}.
  *
  * Accepts an object and recursively sorts its keys in alphabetical order.
@@ -234,41 +271,4 @@ export function prepareObject<T = unknown>(
   return removeCircularReferences
     ? orderedRef.ordered.value
     : orderedRef.ordered
-}
-
-/**
- * Assigns the value to the index of the array or the key of the object.
- */
-export const assignToIndex = (
-  parent: Record<string, unknown> | unknown[],
-  idx: string | number,
-  value?: unknown
-) => {
-  if (Array.isArray(parent)) parent[Number(idx)] = value
-  else parent[Object.keys(parent)[Number(idx)] as keyof typeof parent] = value
-}
-
-type LeafNode =
-  | undefined
-  | null
-  | number
-  | string
-  | boolean
-  | Date
-  | RegExp
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  | Function
-  | typeof Map
-  | typeof Set
-  | URL
-
-const isLeafNode = (node: unknown): node is LeafNode => {
-  if (!node || typeof node !== 'object') return true
-  return (
-    node instanceof RegExp ||
-    node instanceof Date ||
-    node instanceof Map ||
-    node instanceof Set ||
-    node instanceof URL
-  )
 }
