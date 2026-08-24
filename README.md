@@ -159,10 +159,6 @@ canonicalSerialization(
 
 For more information on serializeJsOptions, refer the [official serializeJavascript documentation](<https://www.npmjs.com/package/serialize-javascript#:~:text=for%20straight%20serialization.-,Options,-The%20serialize()>).
 
-## 🔌 API Reference
-
-`createSharedClient` has the exact same API as graphql-ws, except for the `webSocketImpl` field. For complete usage guides, configuration options, and type definitions, please refer to the [official graphql-ws documentation](https://the-guild.dev/graphql/ws). If you are using a custom WebSocket implementation, see the [graphql-shared-ws custom WebSocket guide](CUSTOM_WEB_SOCKET.md).
-
 ## 👥 Community & Support
 
 - 💬 _**Have an idea?**_ Suggest new features in [GitHub Discussions](../..//discussions).
