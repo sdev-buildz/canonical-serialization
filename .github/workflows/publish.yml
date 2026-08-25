@@ -32,6 +32,9 @@ jobs:
         with:
           # Scopes the local cache server key uniquely across OS, Node versions and other matrix inputs.
           cache-prefix: 'turbo-ubuntu-latest-node-24-serialize-js-7'
+          TURBO_API: http://localhost:41230
+          TURBO_TOKEN: turbogha
+          TURBO_TEAM: turbogha
 
       - name: Create PR or Publish release
         id: changesets

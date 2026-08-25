@@ -47,6 +47,9 @@ jobs:
         env:
           # Required environment variable to sign/verify remote cache artifacts
           TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
+          TURBO_API: http://localhost:41230
+          TURBO_TOKEN: turbogha
+          TURBO_TEAM: turbogha
 
       # Publish to pkgprnew to test publishing before actual publish.
       - name: Upload to pkgprnew. To test published package.
@@ -81,6 +84,9 @@ jobs:
         with:
           # Scopes the local cache server key uniquely across OS, Node versions and other matrix inputs.
           cache-prefix: 'turbo-ubuntu-latest-node-24-serialize-js-7'
+          TURBO_API: http://localhost:41230
+          TURBO_TOKEN: turbogha
+          TURBO_TEAM: turbogha
 
       - name: Run tests against the published package
         run: pnpm exec turbo test
