@@ -3,21 +3,49 @@
   "tasks": {
     "prettier:check": {},
     "lint": {},
-    "type-check": {},
+    "type-check": {
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "*.ts",
+        "*.js",
+        "*tsconfig*.json"
+      ]
+    },
     "coverage": {
       "outputs": ["./coverage"],
-      "persistent": true
+      "persistent": true,
+      "inputs": ["src/**", "tests/**", "package.json", "pnpm-workspace.yaml"]
     },
     "coverage:ci": {
-      "outputs": ["./coverage"]
+      "outputs": ["./coverage"],
+      "inputs": ["src/**", "tests/**", "package.json", "pnpm-workspace.yaml"]
     },
-    "knip": {},
+    "knip": {
+      "inputs": ["$TURBO_DEFAULT$", "!.github/**", "!.vscode/**", "**/*.md"]
+    },
     "build": {
-      "outputs": ["./dist"]
+      "outputs": ["./dist"],
+      "inputs": [
+        "src/**",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "tsdown.config.ts",
+        "turbo.json"
+      ]
     },
     "dev": {
       "persistent": true,
-      "cache": false
+      "cache": false,
+      "inputs": [
+        "src/**",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "tsdown.config.ts",
+        "turbo.json"
+      ]
     }
   },
   "remoteCache": {

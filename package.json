@@ -51,7 +51,7 @@
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "test": "vitest",
-    "coverage": "vitest --coverage",
+    "coverage": "vitest --coverage --watch",
     "coverage:ci": "vitest --coverage --ui=false",
     "knip": "knip",
     "docs:all": "pnpm run docs:user && pnpm run docs:dev",
