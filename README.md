@@ -154,10 +154,10 @@ canonicalSerialization(
 
   //  options forwarded to serializeJavascript.
   serializeJsOptions?: Readonly<Parameters<typeof serializeJavascript>[1]
-): GraphQLSharedWsLink
+): string
 ```
 
-For more information on serializeJsOptions, refer the [official serializeJavascript documentation](<https://www.npmjs.com/package/serialize-javascript#:~:text=for%20straight%20serialization.-,Options,-The%20serialize()>).
+For more information on serializeJsOptions, refer the [official serialize-javascript documentation](<https://www.npmjs.com/package/serialize-javascript#:~:text=for%20straight%20serialization.-,Options,-The%20serialize()>).
 
 ## 👥 Community & Support
 
