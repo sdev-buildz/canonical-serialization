@@ -6,7 +6,7 @@ on:
 
 jobs:
   turbo-cache:
-    uses: ./.github/workflows/turbo-cache-reuasable.yml
+    uses: ./.github/workflows/turbo-cache-reusable.yml
     secrets:
       TURBO_SIGNATURE_KEY: ${{ secrets.TURBO_SIGNATURE_KEY }}
 
