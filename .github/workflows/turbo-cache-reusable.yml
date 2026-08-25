@@ -5,7 +5,7 @@ on:
     inputs:
       node-version:
         default: '24'
-        type: string
+        type: number
         description: 'Node.js version for scoping the cache'
       serialize-javascript-version:
         default: '7'
@@ -19,6 +19,13 @@ on:
       TURBO_SIGNATURE_KEY:
         required: true
         description: 'Secret HMAC key used to sign and verify Turborepo artifacts'
+    outputs:
+      os:
+        value: ${{ jobs.build.outputs.os }}
+      node:
+        value: ${{ jobs.build.outputs.node }}
+      serial:e-js:
+        value: ${{ jobs.build.outputs.serialize-js }}
 
 permissions:
   actions: write
@@ -26,7 +33,10 @@ permissions:
 jobs:
   build:
     runs-on: ${{ inputs.os }}
-
+    outputs:
+      os: ${{ inputs.os }}
+      node: '${{ inputs.node-version }}'
+      serialize-js: ${{ inputs.serialize-javascript-version }}
     steps:
       - name: Turborepo Local Cache Setup
         # v2.5.1
