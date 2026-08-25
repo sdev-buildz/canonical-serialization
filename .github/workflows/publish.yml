@@ -5,6 +5,11 @@ on:
     branches: [main]
 
 jobs:
+  turbo-cache:
+    uses: ./.github/workflows/turbo-cache-reuasable.yml
+    secrets:
+      TURBO_SIGNATURE_KEY: ${{ secrets.TURBO_SIGNATURE_KEY }}
+
   publish-npm:
     runs-on: ubuntu-latest
     permissions:
@@ -14,6 +19,7 @@ jobs:
       repository-projects: write
       deployments: write
       packages: write
+    needs: turbo-cache
     steps:
       # v7
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -25,10 +31,6 @@ jobs:
           version: 11
 
       - run: pnpm ci
-
-      - name: TurboRepo Remote Cache - Github Artifacts
-        # v2.3.12
-        uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7
 
       - name: Create PR or Publish release
         id: changesets

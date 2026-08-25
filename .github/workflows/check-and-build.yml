@@ -8,12 +8,22 @@ permissions:
   contents: read
 
 jobs:
+  turbo-cache:
+    uses: ./.github/workflows/turbo-cache-reuasable.yml
+    with:
+      os: '${{matrix.os}}'
+      node-version: '${{matrix.node}}'
+      serialize-js: '${{matrix.serialize-javascript}}'
+    secrets:
+      TURBO_SIGNATURE_KEY: ${{ secrets.TURBO_SIGNATURE_KEY }}
+
   check-and-test-publish:
     strategy:
       matrix:
         node: [22, 24, 26]
         serialize-javascript: [6, 7]
     runs-on: ubuntu-latest
+    needs: turbo-cache
     outputs:
       urls: ${{ steps.pkgprnew.outputs.urls }}
     steps:
@@ -31,12 +41,11 @@ jobs:
       - run: pnpm add serialize-javascript@${{ matrix.serialize-javascript }}
       - run: pnpm exec prettier --write ./pnpm-lock.yaml
 
-      - name: Remote Cache for Turbo - Github Artifacts
-        # v2.3.12
-        uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7
-
       # Run checks and builds.
       - run: pnpm run check
+        env:
+          # Required environment variable to sign/verify remote cache artifacts
+          TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
 
       # Publish to pkgprnew to test publishing before actual publish.
       - name: Upload to pkgprnew. To test published package.
@@ -64,10 +73,6 @@ jobs:
 
       - name: Install the published package for testing
         run: pnpm add canonical-serialization-published@${{ needs.check-and-test-publish.outputs.urls }}
-
-      - name: TurboRepo Remote Cache - Github Artifacts
-        # v2.3.12
-        uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7
 
       - name: Run tests against the published package
         run: pnpm exec turbo coverage

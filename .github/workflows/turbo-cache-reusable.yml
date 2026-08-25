@@ -1,0 +1,40 @@
+name: Reusable Turborepo Remote Caching with Github Artifacts
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        default: '24'
+        type: string
+        description: 'Node.js version for scoping the cache'
+      serialize-javascript-version:
+        default: '7'
+        type: string
+        description: 'serialize-javascript version for scoping the cache'
+      os:
+        default: ubuntu-latest
+        type: string
+        description: 'Runner OS for scoping the cache'
+    secrets:
+      TURBO_SIGNATURE_KEY:
+        required: true
+        description: 'Secret HMAC key used to sign and verify Turborepo artifacts'
+
+jobs:
+  build:
+    runs-on: ${{ inputs.os }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Turborepo Local Cache Setup
+        uses: rharkor/caching-for-turbo@v2
+        with:
+          # Scopes the local cache server key uniquely across OS, Node versions and other matrix inputs.
+          cache-prefix: 'turbo-${{ inputs.os }}-node-${{ inputs.node-version }}-serialize-js-${{inputs.serialize-javascript-version}}'
