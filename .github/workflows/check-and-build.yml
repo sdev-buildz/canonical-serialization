@@ -8,25 +8,11 @@ permissions:
   contents: read
 
 jobs:
-  turbo-cache:
-    uses: ./.github/workflows/turbo-cache-reusable.yml
-    permissions:
-      actions: write
-    strategy:
-      matrix:
-        node: [22, 24, 26]
-        serialize-javascript: [6, 7]
-    with:
-      node-version: '${{matrix.node}}'
-      serialize-javascript-version: '${{matrix.serialize-javascript}}'
-    secrets:
-      TURBO_SIGNATURE_KEY: ${{ secrets.TURBO_SIGNATURE_KEY }}
-
   check-and-test-publish:
     runs-on: ubuntu-latest
-    needs: turbo-cache
     strategy:
       matrix:
+        os: ['ubuntu-latest']
         node: [22, 24, 26]
         serialize-javascript: [6, 7]
     outputs:
@@ -45,6 +31,13 @@ jobs:
 
       - run: pnpm add serialize-javascript@${{ matrix.serialize-javascript }}
       - run: pnpm exec prettier --write ./pnpm-lock.yaml
+
+      - name: Turborepo Remote Cache using Github Artifacts
+        # v2.5.1
+        uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7
+        with:
+          # Scopes the local cache server key uniquely across OS, Node versions and other matrix inputs.
+          cache-prefix: 'turbo-${{ matrix.os }}-node-${{ matrix.node }}-serialize-js-${{matrix.serialize-javascript}}'
 
       # Run checks and builds.
       - run: pnpm run check
@@ -78,6 +71,13 @@ jobs:
 
       - name: Install the published package for testing
         run: pnpm add canonical-serialization-published@${{ needs.check-and-test-publish.outputs.urls }}
+
+      - name: Turborepo Remote Cache using Github Artifacts
+        # v2.5.1
+        uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7
+        with:
+          # Scopes the local cache server key uniquely across OS, Node versions and other matrix inputs.
+          cache-prefix: 'turbo-ubuntu-latest-node-24-serialize-js-7'
 
       - name: Run tests against the published package
         run: pnpm exec turbo coverage
