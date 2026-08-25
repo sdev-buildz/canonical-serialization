@@ -124,6 +124,10 @@ const deserializedObject = deserialize(serializedString)
 If [shared references](#circular-references) were not serialized,
 [eval](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval) also can be used.
 
+### ⚠️ Security note — eval and untrusted input
+
+`deserialize` uses eval to reconstruct values produced by canonicalSerialization (serialize-javascript can embed executable code for functions and similar values). This means the deserialization step will execute code contained in the serialized string. DO NOT call deserialize on input from untrusted sources. If you must accept untrusted data, avoid serializing functions or other executable values, or perform strict validation before deserializing. Consider providing or using a safer, non-executing format for untrusted input.
+
 ## ⚙️ canonicalSerialization - Function signature
 
 ```ts
@@ -158,10 +162,6 @@ canonicalSerialization(
 ```
 
 For more information on serializeJsOptions, refer the [official serialize-javascript documentation](<https://www.npmjs.com/package/serialize-javascript#:~:text=for%20straight%20serialization.-,Options,-The%20serialize()>).
-
-### ⚠️ Security note — eval and untrusted input
-
-deserialize uses eval to reconstruct values produced by canonicalSerialization (serialize-javascript can embed executable code for functions and similar values). This means the deserialization step will execute code contained in the serialized string. DO NOT call deserialize on input from untrusted sources. If you must accept untrusted data, avoid serializing functions or other executable values, or perform strict validation before deserializing. Consider providing or using a safer, non-executing format for untrusted input.
 
 ## 👥 Community & Support
 
