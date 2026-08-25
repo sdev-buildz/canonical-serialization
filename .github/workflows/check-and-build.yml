@@ -10,6 +10,8 @@ permissions:
 jobs:
   turbo-cache:
     uses: ./.github/workflows/turbo-cache-reusable.yml
+    permissions:
+      actions: write
     strategy:
       matrix:
         node: [22, 24, 26]

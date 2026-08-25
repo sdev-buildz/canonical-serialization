@@ -7,6 +7,8 @@ on:
 jobs:
   turbo-cache:
     uses: ./.github/workflows/turbo-cache-reusable.yml
+    permissions:
+      actions: write
     secrets:
       TURBO_SIGNATURE_KEY: ${{ secrets.TURBO_SIGNATURE_KEY }}
 
