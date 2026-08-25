@@ -39,6 +39,9 @@ jobs:
           # Scopes the local cache server key uniquely across OS, Node versions and other matrix inputs.
           cache-prefix: 'turbo-${{ matrix.os }}-node-${{ matrix.node }}-serialize-js-${{matrix.serialize-javascript}}'
 
+      - name: Debug Turbo Cache Hash
+        run: npx turbo run build --dry=json
+
       # Run checks and builds.
       - run: pnpm run check
         env:
