@@ -24,7 +24,7 @@ on:
         value: ${{ jobs.build.outputs.os }}
       node:
         value: ${{ jobs.build.outputs.node }}
-      serial:e-js:
+      serialize-js:
         value: ${{ jobs.build.outputs.serialize-js }}
 
 permissions:
