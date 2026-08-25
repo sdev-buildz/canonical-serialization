@@ -1,3 +1,0 @@
-{
-  "entry": ["typedoc.dev.js", "src/index.ts", "tests/**/*.test.ts"]
-}
