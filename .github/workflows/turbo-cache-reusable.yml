@@ -28,14 +28,6 @@ jobs:
     runs-on: ${{ inputs.os }}
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ inputs.node-version }}
-
       - name: Turborepo Local Cache Setup
         # v2.5.1
         uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7
