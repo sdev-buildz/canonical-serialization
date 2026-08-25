@@ -20,6 +20,9 @@ on:
         required: true
         description: 'Secret HMAC key used to sign and verify Turborepo artifacts'
 
+permissions:
+  actions: write
+
 jobs:
   build:
     runs-on: ${{ inputs.os }}
