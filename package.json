@@ -1,6 +1,6 @@
 {
   "name": "canonical-serialization",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Serializes objects into unique, deterministic and deserializable strings, even with circular references.",
   "keywords": [
     "serializer",
