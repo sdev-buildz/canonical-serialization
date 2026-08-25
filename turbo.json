@@ -47,8 +47,5 @@
         "turbo.json"
       ]
     }
-  },
-  "remoteCache": {
-    "signature": true
   }
 }
