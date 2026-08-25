@@ -20,7 +20,7 @@ export default defineConfig({
       // When TEST_PUBLISHED_PKG is true, resolve imports of your package name to the published package
       '@canonical-serialization':
         process.env.TEST_PUBLISHED_PKG === 'true'
-          ? 'canonical-serialization-published'
+          ? 'pkgprnew-published'
           : './src',
     },
   },

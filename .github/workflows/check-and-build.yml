@@ -70,7 +70,7 @@ jobs:
       - run: pnpm install --frozen-lockfile --dev
 
       - name: Install the published package for testing
-        run: pnpm add canonical-serialization-published@${{ needs.check-and-test-publish.outputs.urls }}
+        run: pnpm add pkgprnew-published@${{ needs.check-and-test-publish.outputs.urls }}
 
       - name: Turborepo Remote Cache using Github Artifacts
         # v2.5.1
@@ -80,6 +80,6 @@ jobs:
           cache-prefix: 'turbo-ubuntu-latest-node-24-serialize-js-7'
 
       - name: Run tests against the published package
-        run: pnpm exec turbo coverage
+        run: pnpm exec turbo test
         env:
           TEST_PUBLISHED_PKG: 'true'

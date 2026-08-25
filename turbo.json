@@ -6,7 +6,10 @@
     "type-check": {},
     "coverage": {
       "outputs": ["./coverage"],
-      "env": ["TEST_PUBLISHED_PKG"]
+      "persistent": true
+    },
+    "coverage:ci": {
+      "outputs": ["./coverage"]
     },
     "knip": {},
     "build": {
