@@ -1,0 +1,54 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "tasks": {
+    "prettier:check": {},
+    "lint": {},
+    "type-check": {
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "*.ts",
+        "*.js",
+        "*tsconfig*.json"
+      ]
+    },
+    "coverage": {
+      "outputs": ["./coverage"],
+      "persistent": true,
+      "inputs": ["src/**", "tests/**", "package.json", "pnpm-workspace.yaml"]
+    },
+    "coverage:ci": {
+      "outputs": ["./coverage"],
+      "inputs": ["src/**", "tests/**", "package.json", "pnpm-workspace.yaml"]
+    },
+    "knip": {
+      "inputs": ["$TURBO_DEFAULT$", "!.github/**", "!.vscode/**", "**/*.md"]
+    },
+    "build": {
+      "outputs": ["./dist"],
+      "inputs": [
+        "src/**",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "tsdown.config.ts",
+        "turbo.json"
+      ]
+    },
+    "dev": {
+      "persistent": true,
+      "cache": false,
+      "inputs": [
+        "src/**",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "tsdown.config.ts",
+        "turbo.json"
+      ]
+    }
+  },
+  "remoteCache": {
+    "signature": true
+  }
+}
