@@ -16,7 +16,7 @@ jobs:
         serialize-javascript: [6, 7]
     with:
       node-version: '${{matrix.node}}'
-      serialize-js: '${{matrix.serialize-javascript}}'
+      serialize-javascript-version: '${{matrix.serialize-javascript}}'
     secrets:
       TURBO_SIGNATURE_KEY: ${{ secrets.TURBO_SIGNATURE_KEY }}
 
