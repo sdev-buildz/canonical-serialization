@@ -32,7 +32,6 @@ jobs:
         with:
           # Scopes the local cache server key uniquely across OS, Node versions and other matrix inputs.
           cache-prefix: 'turbo-ubuntu-latest-node-24-serialize-js-7'
-          signature-key: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
 
       - name: Create PR or Publish release
         id: changesets

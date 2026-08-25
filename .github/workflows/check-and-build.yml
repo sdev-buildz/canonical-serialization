@@ -38,7 +38,6 @@ jobs:
         with:
           # Scopes the local cache server key uniquely across OS, Node versions and other matrix inputs.
           cache-prefix: 'turbo-${{ matrix.os }}-node-${{ matrix.node }}-serialize-js-${{matrix.serialize-javascript}}'
-          signature-key: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
 
       # Run checks and builds.
       - run: pnpm run check
@@ -79,7 +78,6 @@ jobs:
         with:
           # Scopes the local cache server key uniquely across OS, Node versions and other matrix inputs.
           cache-prefix: 'turbo-ubuntu-latest-node-24-serialize-js-7'
-          signature-key: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
 
       - name: Run tests against the published package
         run: pnpm exec turbo test
